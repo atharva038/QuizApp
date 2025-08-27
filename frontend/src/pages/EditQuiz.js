@@ -60,16 +60,13 @@ export default function EditQuiz() {
     setError("");
     setSuccess("");
     try {
-      const token = localStorage.getItem("token");
       await axios.put(
         `${
           process.env.REACT_APP_API_URL || "http://localhost:5000/api"
         }/quiz/${id}`,
         {title, topic, questions},
         {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          withCredentials: true, // <-- use cookie-based auth
         }
       );
       setSuccess("Quiz updated successfully!");

@@ -5,6 +5,7 @@ import cors from "cors";
 import authRoutes from "./src/routes/auth.js";
 import quizRoutes from "./src/routes/quiz.js";
 import resultRoutes from "./src/routes/result.js";
+import cookieParser from "cookie-parser";
 
 dotenv.config();
 
@@ -36,6 +37,7 @@ app.use(
 
 // Middleware
 app.use(express.json());
+app.use(cookieParser());
 
 // Routes
 app.use("/api/auth", authRoutes);

@@ -18,15 +18,12 @@ export default function QuizDetail() {
       setLoading(true);
       setError("");
       try {
-        const token = localStorage.getItem("token");
         const res = await axios.get(
           `${
             process.env.REACT_APP_API_URL || "http://localhost:5000/api"
           }/quiz/${id}`,
           {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
+            withCredentials: true, // <-- use cookie-based auth
           }
         );
         setQuiz(res.data);
@@ -51,16 +48,13 @@ export default function QuizDetail() {
     setError("");
     setSuccess("");
     try {
-      const token = localStorage.getItem("token");
       const res = await axios.post(
         `${
           process.env.REACT_APP_API_URL || "http://localhost:5000/api"
         }/quiz/${id}/attempt`,
         {answers},
         {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          withCredentials: true, // <-- use cookie-based auth
         }
       );
       setSuccess(

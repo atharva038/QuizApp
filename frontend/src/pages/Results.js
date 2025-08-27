@@ -11,17 +11,13 @@ export default function Results() {
       setLoading(true);
       setError("");
       try {
-        const token = localStorage.getItem("token");
-        // You need the userId to fetch results
-        const userId = JSON.parse(atob(token.split(".")[1])).userId;
+        // No token from localStorage, use cookie-based auth
         const res = await axios.get(
           `${
             process.env.REACT_APP_API_URL || "http://localhost:5000/api"
-          }/result/user/${userId}`,
+          }/result/user/me`,
           {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
+            withCredentials: true, // <-- use cookie-based auth
           }
         );
         setResults(res.data);

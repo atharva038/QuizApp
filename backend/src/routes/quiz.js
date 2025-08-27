@@ -37,10 +37,10 @@ router.delete("/:id", auth, deleteQuiz);
  * Anyone can browse quizzes and view quiz details
  */
 
-// Get all quizzes (public)
+// Get all quizzes (public access)
 router.get("/", getQuizzesPublic);
 
-// Get quiz by ID (public)
+// Get quiz by ID (public access)
 router.get("/:id", getQuizById);
 
 export default router;

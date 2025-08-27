@@ -1,4 +1,4 @@
-import React, {useEffect} from "react";
+import React, {useEffect, useState} from "react";
 import {Link, useLocation, useNavigate} from "react-router-dom";
 import {
   FaBrain,
@@ -8,19 +8,37 @@ import {
   FaSignOutAlt,
   FaPlusCircle,
 } from "react-icons/fa";
+import axios from "axios";
 
 export default function Navbar() {
   const location = useLocation();
   const navigate = useNavigate();
-  const isLoggedIn = !!localStorage.getItem("token");
+  const [expanded, setExpanded] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const handleStorage = () => {
-      // No-op, but keeps the effect for future extensibility
+    setExpanded(false);
+  }, [location.pathname]);
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const res = await axios.get(
+          `${
+            process.env.REACT_APP_API_URL || "http://localhost:5000/api"
+          }/auth/me`,
+          {withCredentials: true}
+        );
+        setIsLoggedIn(!!res.data?.user);
+      } catch {
+        setIsLoggedIn(false);
+      } finally {
+        setLoading(false);
+      }
     };
-    window.addEventListener("storage", handleStorage);
-    return () => window.removeEventListener("storage", handleStorage);
-  }, []);
+    checkAuth();
+  }, [location.pathname]);
 
   const navItems = [
     {
@@ -55,9 +73,24 @@ export default function Navbar() {
     },
   ];
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    navigate("/login");
+  const handleLogout = async () => {
+    try {
+      await axios.post(
+        `${
+          process.env.REACT_APP_API_URL || "http://localhost:5000/api"
+        }/auth/logout`,
+        {},
+        {withCredentials: true}
+      );
+      setIsLoggedIn(false);
+      navigate("/login");
+    } catch (err) {
+      console.error("Logout failed", err);
+    }
+  };
+
+  const handleToggle = () => {
+    setExpanded((prev) => !prev);
   };
 
   return (
@@ -70,39 +103,46 @@ export default function Navbar() {
         <button
           className="navbar-toggler"
           type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarNav"
           aria-controls="navbarNav"
-          aria-expanded="false"
+          aria-expanded={expanded}
           aria-label="Toggle navigation"
+          onClick={handleToggle}
         >
           <span className="navbar-toggler-icon"></span>
         </button>
-        <div className="collapse navbar-collapse" id="navbarNav">
+        <div
+          className={`collapse navbar-collapse${expanded ? " show" : ""}`}
+          id="navbarNav"
+        >
           <ul className="navbar-nav ms-auto">
-            {navItems
-              .filter((item) => item.show)
-              .map((item) => (
-                <li className="nav-item" key={item.href}>
-                  <Link
-                    to={item.href}
-                    className={`nav-link d-flex align-items-center gap-1 ${
-                      location.pathname === item.href
-                        ? "active fw-bold text-primary"
-                        : ""
-                    }`}
-                  >
-                    {item.icon}
-                    {item.label}
-                  </Link>
-                </li>
-              ))}
-            {isLoggedIn && (
+            {!loading &&
+              navItems
+                .filter((item) => item.show)
+                .map((item) => (
+                  <li className="nav-item" key={item.href}>
+                    <Link
+                      to={item.href}
+                      className={`nav-link d-flex align-items-center gap-1 ${
+                        location.pathname.startsWith(item.href)
+                          ? "active fw-bold text-primary"
+                          : ""
+                      }`}
+                      onClick={() => setExpanded(false)}
+                    >
+                      {item.icon}
+                      {item.label}
+                    </Link>
+                  </li>
+                ))}
+            {!loading && isLoggedIn && (
               <li className="nav-item">
                 <button
                   className="nav-link btn btn-link d-flex align-items-center gap-1 text-danger"
                   style={{textDecoration: "none"}}
-                  onClick={handleLogout}
+                  onClick={() => {
+                    handleLogout();
+                    setExpanded(false);
+                  }}
                 >
                   <FaSignOutAlt className="me-2" />
                   Logout

@@ -15,14 +15,14 @@ export default function Login() {
     setError("");
     setLoading(true);
     try {
-      const res = await axios.post(
+      await axios.post(
         `${
           process.env.REACT_APP_API_URL || "http://localhost:5000/api"
         }/auth/login`,
-        {email, password}
+        {email, password},
+        {withCredentials: true} // <-- allow cookies to be sent/received
       );
       setLoading(false);
-      localStorage.setItem("token", res.data.token);
       alert("✅ Login successful!");
       navigate("/quizzes"); // <-- Redirect to quizzes
     } catch (err) {

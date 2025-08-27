@@ -13,15 +13,12 @@ export default function ResultDetail() {
       setLoading(true);
       setError("");
       try {
-        const token = localStorage.getItem("token");
         const res = await axios.get(
           `${
             process.env.REACT_APP_API_URL || "http://localhost:5000/api"
           }/result/${id}`,
           {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
+            withCredentials: true, // <-- use cookie-based auth
           }
         );
         setResult(res.data);

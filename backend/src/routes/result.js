@@ -7,7 +7,13 @@ import {
 
 const router = Router();
 
-// Get all results for a user
+// Get all results for the authenticated user
+router.get("/user/me", auth, (req, res, next) => {
+  req.params.userId = req.user.id;
+  return getUserResults(req, res, next);
+});
+
+// Get all results for a specific user (admin or for future use)
 router.get("/user/:userId", auth, getUserResults);
 
 // Get single result by ID
