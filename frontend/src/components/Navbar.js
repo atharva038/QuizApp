@@ -7,6 +7,7 @@ import {
   FaSignInAlt,
   FaSignOutAlt,
   FaPlusCircle,
+  FaListAlt,
 } from "react-icons/fa";
 import axios from "axios";
 
@@ -69,6 +70,12 @@ export default function Navbar() {
       href: "/quiz/create",
       label: "Create Quiz",
       icon: <FaPlusCircle className="me-2" />,
+      show: isLoggedIn,
+    },
+    {
+      href: "/my-quizzes",
+      label: "My Quizzes",
+      icon: <FaListAlt className="me-2" />,
       show: isLoggedIn,
     },
   ];

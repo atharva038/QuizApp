@@ -1,5 +1,6 @@
 import {Router} from "express";
 import {auth} from "../middleware/auth.js";
+import Quiz from "../models/Quiz.js";
 import {
   createQuiz,
   generateQuiz,
@@ -31,6 +32,19 @@ router.put("/:id", auth, editQuiz);
 
 // Delete quiz (auth + must be creator or admin)
 router.delete("/:id", auth, deleteQuiz);
+
+// Get quizzes created by the authenticated user
+router.get("/my", auth, async (req, res) => {
+  try {
+    const quizzes = await Quiz.find({createdBy: req.user.id}).populate(
+      "createdBy",
+      "username"
+    );
+    res.json(quizzes);
+  } catch (error) {
+    res.status(500).json({message: error.message});
+  }
+});
 
 /**
  * 🌍 Public Routes

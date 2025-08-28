@@ -9,6 +9,7 @@ import ResultDetail from "./pages/ResultDetail.js";
 import CreateQuiz from "./pages/CreateQuiz.js";
 import QuizDetail from "./pages/QuizDetail.js";
 import EditQuiz from "./pages/EditQuiz.js";
+import MyQuizzes from "./pages/MyQuizzes.js";
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
           <Route path="/quiz/create" element={<CreateQuiz />} />
           <Route path="/quizzes/:id" element={<QuizDetail />} />
           <Route path="/quiz/edit/:id" element={<EditQuiz />} />
+          <Route path="/my-quizzes" element={<MyQuizzes />} />
         </Routes>
       </div>
     </Router>
