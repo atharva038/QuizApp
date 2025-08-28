@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useState, useContext} from "react";
 import {Link, useLocation, useNavigate} from "react-router-dom";
 import {
   FaBrain,
@@ -8,8 +8,11 @@ import {
   FaSignOutAlt,
   FaPlusCircle,
   FaListAlt,
+  FaMoon,
+  FaSun,
 } from "react-icons/fa";
 import axios from "axios";
+import {ThemeContext} from "../themeContext.js";
 
 export default function Navbar() {
   const location = useLocation();
@@ -17,6 +20,8 @@ export default function Navbar() {
   const [expanded, setExpanded] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [loading, setLoading] = useState(true);
+  const {theme, toggleTheme} = useContext(ThemeContext);
+  const darkMode = theme === "dark";
 
   useEffect(() => {
     setExpanded(false);
@@ -101,7 +106,11 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="navbar navbar-expand-md navbar-light bg-light border-bottom sticky-top">
+    <nav
+      className={`navbar navbar-expand-md navbar-light bg-light border-bottom sticky-top${
+        darkMode ? " bg-dark navbar-dark" : ""
+      }`}
+    >
       <div className="container">
         <Link to="/" className="navbar-brand d-flex align-items-center gap-2">
           <FaBrain className="text-primary" size={24} />
@@ -122,6 +131,19 @@ export default function Navbar() {
           id="navbarNav"
         >
           <ul className="navbar-nav ms-auto">
+            {/* Dark mode toggle */}
+            <li className="nav-item d-flex align-items-center me-2">
+              <button
+                className={`btn btn-link nav-link${
+                  darkMode ? " text-warning" : ""
+                }`}
+                style={{textDecoration: "none"}}
+                onClick={toggleTheme}
+                aria-label="Toggle dark mode"
+              >
+                {darkMode ? <FaSun /> : <FaMoon />}
+              </button>
+            </li>
             {!loading &&
               navItems
                 .filter((item) => item.show)

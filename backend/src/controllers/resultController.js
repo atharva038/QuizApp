@@ -1,15 +1,16 @@
 import Result from "../models/Result.js";
 import Quiz from "../models/Quiz.js";
 
-// (1) Get all results of a user
 export const getUserResults = async (req, res) => {
   try {
     const results = await Result.find({userId: req.params.userId})
       .populate({
         path: "quizId",
-        select: "title topic questions", // <-- include questions
+        select: "title topic",
       })
       .sort({createdAt: -1});
+
+    console.log("🔍 Results API Response:", JSON.stringify(results, null, 2));
 
     res.json(results);
   } catch (error) {

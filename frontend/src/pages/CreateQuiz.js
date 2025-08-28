@@ -1,7 +1,8 @@
-import React, {useState} from "react";
+import React, {useState, useContext} from "react";
 import axios from "axios";
 import {useNavigate} from "react-router-dom";
 import {FaPlusCircle, FaRobot} from "react-icons/fa";
+import {ThemeContext} from "../themeContext.js";
 
 export default function CreateQuiz() {
   const [title, setTitle] = useState("");
@@ -18,6 +19,8 @@ export default function CreateQuiz() {
 
   const navigate = useNavigate();
   const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5000/api";
+  const {theme} = useContext(ThemeContext);
+  const darkMode = theme === "dark";
 
   const handleQuestionChange = (idx, field, value) => {
     const updated = [...questions];
@@ -46,10 +49,7 @@ export default function CreateQuiz() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // Prevent duplicate submissions immediately
     if (loading) return;
-
     setError("");
     setSuccess("");
     setLoading(true);
@@ -80,7 +80,6 @@ export default function CreateQuiz() {
         {topic: aiTopic, numQuestions: aiNumQuestions},
         {withCredentials: true}
       );
-      // Add default explanation to each question if not present
       const aiQuestions = res.data.questions.map((q) => ({
         ...q,
         explanation: q.explanation || "No explanation provided.",
@@ -96,17 +95,21 @@ export default function CreateQuiz() {
   };
 
   return (
-    <div className="container mt-5">
-      <div
-        className="card shadow border-0 rounded-4 mx-auto"
-        style={{maxWidth: 750}}
-      >
+    <div
+      className={`container mt-5 create-quiz-page ${
+        darkMode ? "dark-mode" : "light-mode"
+      }`}
+    >
+      <div className="card quiz-form-card shadow border-0 rounded-4 mx-auto">
         <div className="card-body p-4">
           {/* Header */}
           <div className="text-center mb-4">
-            <FaPlusCircle className="text-success mb-2" size={38} />
-            <h3 className="fw-bold text-dark">Create a New Quiz</h3>
-            <p className="text-muted small">
+            <FaPlusCircle
+              className={`mb-2 ${darkMode ? "text-info" : "text-success"}`}
+              size={38}
+            />
+            <h3 className="fw-bold">Create a New Quiz</h3>
+            <p className="small opacity-75">
               Add questions manually or generate with AI
             </p>
           </div>
@@ -139,7 +142,7 @@ export default function CreateQuiz() {
               <div className="col-md-4">
                 <button
                   type="submit"
-                  className="btn btn-info w-100"
+                  className="btn btn-primary-custom w-100"
                   disabled={aiLoading}
                 >
                   <FaRobot className="me-2" />
@@ -177,7 +180,7 @@ export default function CreateQuiz() {
             <hr />
             <h5 className="mb-3 fw-bold text-secondary">Questions</h5>
             {questions.map((q, idx) => (
-              <div key={idx} className="mb-4 border rounded-3 p-3 bg-light">
+              <div key={idx} className="mb-4 question-box rounded-3 p-3">
                 <div className="mb-2 d-flex justify-content-between align-items-center">
                   <label className="form-label fw-semibold mb-0">
                     Question {idx + 1}
@@ -230,7 +233,6 @@ export default function CreateQuiz() {
                   required
                   placeholder="Correct answer (must match one option)"
                 />
-                {/* Add explanation field */}
                 <input
                   type="text"
                   className="form-control mt-2"
@@ -238,7 +240,7 @@ export default function CreateQuiz() {
                   onChange={(e) =>
                     handleQuestionChange(idx, "explanation", e.target.value)
                   }
-                  placeholder="Explanation (optional, shown if answer is wrong)"
+                  placeholder="Explanation (optional)"
                 />
               </div>
             ))}
@@ -254,7 +256,7 @@ export default function CreateQuiz() {
               </button>
               <button
                 type="submit"
-                className="btn btn-success px-4"
+                className="btn btn-success-custom px-4"
                 disabled={loading}
               >
                 {loading ? "Creating..." : "Create Quiz"}
@@ -275,6 +277,78 @@ export default function CreateQuiz() {
           </form>
         </div>
       </div>
+
+      {/* Scoped Styling */}
+      <style jsx>{`
+        .create-quiz-page.light-mode {
+          background: #f8f9fa;
+          color: #212529;
+        }
+        .create-quiz-page.dark-mode {
+          background: #121212;
+          color: #f1f1f1;
+        }
+        .quiz-form-card {
+          max-width: 750px;
+          border-radius: 16px;
+        }
+        .quiz-form-card.light-mode {
+          background: #fff;
+        }
+        .quiz-form-card.dark-mode {
+          background: #1e1e1e;
+          border: 1px solid #333;
+        }
+        .question-box {
+          background: #f8f9fa;
+        }
+        .dark-mode .question-box {
+          background: #2a2a2a;
+          border: 1px solid #444;
+        }
+
+        .form-control {
+          border-radius: 10px;
+        }
+        .dark-mode .form-control {
+          background: #2c2c2c;
+          border: 1px solid #555;
+          color: #f1f1f1;
+        }
+        .dark-mode .form-control::placeholder {
+          color: #aaa;
+        }
+
+        .btn-primary-custom {
+          background: linear-gradient(45deg, #6a11cb, #2575fc);
+          border: none;
+          color: #fff;
+          border-radius: 50px;
+          font-weight: 600;
+          padding: 10px 20px;
+          transition: all 0.3s ease;
+        }
+        .btn-primary-custom:hover {
+          transform: translateY(-2px);
+          opacity: 0.95;
+          box-shadow: 0 5px 15px rgba(37, 117, 252, 0.4);
+        }
+
+        .btn-success-custom {
+          background: linear-gradient(45deg, #28a745, #218838);
+          border: none;
+          color: #fff;
+          border-radius: 50px;
+          font-weight: 600;
+          padding: 10px 20px;
+          transition: all 0.3s ease;
+        }
+        .btn-success-custom:hover {
+          transform: translateY(-2px);
+          opacity: 0.95;
+          box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
+        }
+      `}</style>
     </div>
   );
 }

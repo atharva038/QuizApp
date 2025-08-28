@@ -1,8 +1,9 @@
-import React, {useEffect, useState, useCallback} from "react";
+import React, {useEffect, useState, useCallback, useContext} from "react";
 import axios from "axios";
 import {useNavigate} from "react-router-dom";
 import {FaPlusCircle} from "react-icons/fa";
 import QuizCard from "./QuizCard";
+import {ThemeContext} from "../themeContext"; // import context
 
 export default function Quizzes() {
   const [quizzes, setQuizzes] = useState([]);
@@ -11,8 +12,11 @@ export default function Quizzes() {
   const [error, setError] = useState("");
   const [deletingId, setDeletingId] = useState(null);
   const [search, setSearch] = useState("");
-  const [sortOrder, setSortOrder] = useState("latest"); // latest or oldest
+  const [sortOrder, setSortOrder] = useState("latest");
   const navigate = useNavigate();
+
+  const {theme} = useContext(ThemeContext);
+  const darkMode = theme === "dark";
 
   const fetchQuizzes = useCallback(async () => {
     setLoading(true);
@@ -75,38 +79,46 @@ export default function Quizzes() {
   }, [sortOrder]);
 
   return (
-    <div className="container my-5">
-      <div className="d-flex justify-content-between align-items-center mb-4">
-        <h2 className="text-center fw-bold mb-0">📚 Available Quizzes</h2>
-        <button
-          className="btn btn-primary d-flex align-items-center"
-          onClick={() => navigate("/quiz/create")}
-        >
-          <FaPlusCircle className="me-2" />
-          Create Quiz
-        </button>
-      </div>
+    <div
+      className={`container-fluid min-vh-100 py-5 quizzes-page ${
+        darkMode ? "dark-mode" : "light-mode"
+      }`}
+    >
+      <h2 className="mb-5 text-center quizzes-title">📚 Available Quizzes</h2>
 
-      {/* Search and Sort */}
-      <div className="row mb-4">
-        <div className="col-md-6 mb-2">
+      {/* Search + Sort + Create */}
+      <div className="row mb-4 justify-content-center">
+        <div className="col-md-4 mb-2">
           <input
             type="text"
-            className="form-control"
+            className={`form-control ${
+              darkMode ? "bg-secondary text-light border-0" : ""
+            }`}
             placeholder="Search by quiz title..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
-        <div className="col-md-6 mb-2">
+        <div className="col-md-3 mb-2">
           <select
-            className="form-select"
+            className={`form-select ${
+              darkMode ? "bg-secondary text-light border-0" : ""
+            }`}
             value={sortOrder}
             onChange={(e) => setSortOrder(e.target.value)}
           >
             <option value="latest">Sort by Latest</option>
             <option value="oldest">Sort by Oldest</option>
           </select>
+        </div>
+        <div className="col-md-3 mb-2 text-md-end text-center">
+          <button
+            className="btn btn-primary-custom d-flex align-items-center justify-content-center w-100"
+            onClick={() => navigate("/quiz/create")}
+          >
+            <FaPlusCircle className="me-2" />
+            Create Quiz
+          </button>
         </div>
       </div>
 
@@ -122,6 +134,7 @@ export default function Quizzes() {
               onDelete={handleDelete}
               isDeleting={deletingId === quiz._id}
               showActions={true}
+              darkMode={darkMode}
             />
           ))}
         </div>
@@ -131,6 +144,51 @@ export default function Quizzes() {
           <div className="text-center text-muted mt-5">No quizzes found.</div>
         )
       )}
+
+      {/* Scoped Styling */}
+      <style jsx>{`
+        .quizzes-page.light-mode {
+          background: #f8f9fa;
+          color: #212529;
+        }
+        .quizzes-page.dark-mode {
+          background: #121212;
+          color: #f1f1f1;
+        }
+
+        .quizzes-title {
+          font-size: 2.2rem;
+          font-weight: 700;
+          position: relative;
+          padding-bottom: 10px;
+        }
+        .quizzes-title::after {
+          content: "";
+          display: block;
+          width: 80px;
+          height: 4px;
+          margin: 0 auto;
+          margin-top: 10px;
+          background: linear-gradient(90deg, #6a11cb, #2575fc);
+          border-radius: 3px;
+        }
+
+        .btn-primary-custom {
+          background: linear-gradient(45deg, #6a11cb, #2575fc);
+          border: none;
+          color: #fff;
+          border-radius: 50px;
+          padding: 10px 20px;
+          font-weight: 600;
+          transition: all 0.3s ease;
+          text-align: center;
+        }
+        .btn-primary-custom:hover {
+          opacity: 0.95;
+          transform: translateY(-2px);
+          box-shadow: 0 5px 15px rgba(37, 117, 252, 0.4);
+        }
+      `}</style>
     </div>
   );
 }

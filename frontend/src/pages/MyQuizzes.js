@@ -1,8 +1,9 @@
-import React, {useEffect, useState, useCallback} from "react";
+import React, {useEffect, useState, useCallback, useContext} from "react";
 import axios from "axios";
 import {useNavigate} from "react-router-dom";
 import {FaPlusCircle} from "react-icons/fa";
-import QuizCard from "./QuizCard"; // <-- import the reusable QuizCard
+import QuizCard from "./QuizCard";
+import {ThemeContext} from "../themeContext.js"; // <-- import ThemeContext
 
 // --- Main MyQuizzes Component ---
 export default function MyQuizzes() {
@@ -12,6 +13,8 @@ export default function MyQuizzes() {
   const [deletingId, setDeletingId] = useState(null);
   const [userId, setUserId] = useState(null);
   const navigate = useNavigate();
+  const {theme} = useContext(ThemeContext);
+  const darkMode = theme === "dark";
 
   useEffect(() => {
     const fetchMe = async () => {
@@ -85,6 +88,7 @@ export default function MyQuizzes() {
     .my-quizzes-container {
       max-width: 1140px;
       animation: fadeIn 0.5s ease-in-out;
+      ${darkMode ? "color: #f1f1f1;" : ""}
     }
 
     @keyframes fadeIn {
@@ -97,6 +101,11 @@ export default function MyQuizzes() {
       border-radius: 12px;
       transition: transform 0.3s ease, box-shadow 0.3s ease;
       overflow: hidden;
+      ${
+        darkMode
+          ? "background: #1e1e1e; color: #f1f1f1; border-color: #333;"
+          : ""
+      }
     }
 
     .quiz-card:hover {
@@ -106,7 +115,7 @@ export default function MyQuizzes() {
 
     .quiz-card .card-title {
       font-weight: 600;
-      color: #333;
+      color: ${darkMode ? "#f1f1f1" : "#333"};
     }
 
     .quiz-card .btn {
@@ -130,15 +139,16 @@ export default function MyQuizzes() {
     }
 
     .empty-state {
-      background-color: #f8f9fa;
+      background-color: ${darkMode ? "#1a1a1a" : "#f8f9fa"};
+      color: ${darkMode ? "#f1f1f1" : "#555"};
       padding: 50px;
       border-radius: 12px;
       margin-top: 30px;
-      border: 1px dashed #ddd;
+      border: 1px dashed ${darkMode ? "#444" : "#ddd"};
     }
 
     .empty-state h3 {
-      color: #555;
+      color: ${darkMode ? "#f1f1f1" : "#555"};
     }
   `;
 
@@ -185,11 +195,22 @@ export default function MyQuizzes() {
   return (
     <>
       <style>{styles}</style>
-      <div className="container my-quizzes-container mt-5">
+      <div
+        className={`container my-quizzes-container mt-5${
+          darkMode ? " bg-dark" : ""
+        }`}
+      >
         <div className="d-flex justify-content-between align-items-center mb-4">
-          <h2 className="mb-0">My Quizzes 🧠</h2>
+          <h2
+            className="mb-0"
+            style={{color: darkMode ? "#f1f1f1" : undefined}}
+          >
+            My Quizzes 🧠
+          </h2>
           <button
-            className="btn btn-primary d-flex align-items-center"
+            className={`btn ${
+              darkMode ? "btn-warning" : "btn-primary"
+            } d-flex align-items-center`}
             onClick={() => navigate("/quiz/create")}
           >
             <FaPlusCircle className="me-2" />
