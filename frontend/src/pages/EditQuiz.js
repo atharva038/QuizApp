@@ -36,7 +36,11 @@ export default function EditQuiz() {
 
   const handleQuestionChange = (idx, field, value) => {
     const updated = [...questions];
-    if (field === "question" || field === "correctAnswer") {
+    if (
+      field === "question" ||
+      field === "correctAnswer" ||
+      field === "explanation"
+    ) {
       updated[idx][field] = value;
     } else {
       updated[idx].options[field] = value;
@@ -175,6 +179,15 @@ export default function EditQuiz() {
                   }
                   required
                   placeholder="Correct answer (must match one option)"
+                />
+                <input
+                  type="text"
+                  className="form-control mt-2"
+                  value={q.explanation || ""}
+                  onChange={(e) =>
+                    handleQuestionChange(idx, "explanation", e.target.value)
+                  }
+                  placeholder="Explanation (optional, shown if answer is wrong)"
                 />
               </div>
             ))}

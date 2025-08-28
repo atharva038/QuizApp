@@ -14,6 +14,10 @@ const questionSchema = new mongoose.Schema({
     type: String,
     required: true, // must match one of the options
   },
+  explanation: {
+    type: String,
+    default: "",
+  },
 });
 
 const quizSchema = new mongoose.Schema(
@@ -25,11 +29,11 @@ const quizSchema = new mongoose.Schema(
     },
     topic: {
       type: String,
-      required: true, // e.g., "JavaScript Basics"
+      required: true,
     },
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User", // links to User model
+      ref: "User",
       required: true,
     },
     questions: {

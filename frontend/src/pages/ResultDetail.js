@@ -18,7 +18,7 @@ export default function ResultDetail() {
             process.env.REACT_APP_API_URL || "http://localhost:5000/api"
           }/result/${id}`,
           {
-            withCredentials: true, // <-- use cookie-based auth
+            withCredentials: true,
           }
         );
         setResult(res.data);
@@ -55,31 +55,61 @@ export default function ResultDetail() {
             <strong>Date:</strong> {new Date(result.createdAt).toLocaleString()}
           </p>
           <hr />
-          <h5>Answers:</h5>
+          <h5>Answers & Explanations:</h5>
           <ul className="list-group mb-3">
-            {result.quizId?.questions?.map((q, idx) => (
-              <li key={idx} className="list-group-item">
-                <div>
-                  <strong>Q{idx + 1}:</strong> {q.question}
-                </div>
-                <div>
-                  <strong>Your answer:</strong>{" "}
-                  <span
-                    className={
-                      result.responses[idx]?.trim().toLowerCase() ===
-                      q.correctAnswer.trim().toLowerCase()
-                        ? "text-success"
-                        : "text-danger"
-                    }
-                  >
-                    {result.responses[idx] || <em>Not answered</em>}
-                  </span>
-                </div>
-                <div>
-                  <strong>Correct answer:</strong> {q.correctAnswer}
-                </div>
-              </li>
-            ))}
+            {result.explanations
+              ? result.explanations.map((exp, idx) => (
+                  <li key={idx} className="list-group-item">
+                    <div>
+                      <strong>Q{idx + 1}:</strong> {exp.question}
+                    </div>
+                    <div>
+                      <strong>Your answer:</strong>{" "}
+                      <span
+                        className={
+                          exp.userAnswer?.trim().toLowerCase() ===
+                          exp.correctAnswer.trim().toLowerCase()
+                            ? "text-success"
+                            : "text-danger"
+                        }
+                      >
+                        {exp.userAnswer || <em>Not answered</em>}
+                      </span>
+                    </div>
+                    <div>
+                      <strong>Correct answer:</strong> {exp.correctAnswer}
+                    </div>
+                    {exp.explanation && (
+                      <div className="mt-2">
+                        <strong>Explanation:</strong>{" "}
+                        <span className="text-info">{exp.explanation}</span>
+                      </div>
+                    )}
+                  </li>
+                ))
+              : result.quizId?.questions?.map((q, idx) => (
+                  <li key={idx} className="list-group-item">
+                    <div>
+                      <strong>Q{idx + 1}:</strong> {q.question}
+                    </div>
+                    <div>
+                      <strong>Your answer:</strong>{" "}
+                      <span
+                        className={
+                          result.responses[idx]?.trim().toLowerCase() ===
+                          q.correctAnswer.trim().toLowerCase()
+                            ? "text-success"
+                            : "text-danger"
+                        }
+                      >
+                        {result.responses[idx] || <em>Not answered</em>}
+                      </span>
+                    </div>
+                    <div>
+                      <strong>Correct answer:</strong> {q.correctAnswer}
+                    </div>
+                  </li>
+                ))}
           </ul>
           <Link to="/results" className="btn btn-secondary">
             Back to Results

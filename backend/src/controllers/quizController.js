@@ -24,7 +24,6 @@ export const createQuiz = async (req, res) => {
   }
 };
 
-// (2) Generate Quiz using Gemini API
 export const generateQuiz = async (req, res) => {
   try {
     const {topic, numQuestions} = req.body;
@@ -34,30 +33,24 @@ export const generateQuiz = async (req, res) => {
     }
 
     const prompt = `Generate ${numQuestions} multiple-choice questions on ${topic}.
-    Each question must have exactly 4 options and one correctAnswer.
-    Return ONLY valid JSON (no markdown, no explanation) in this format:
-    [
-      { "question": "....", "options": ["A","B","C","D"], "correctAnswer": "B" }
-    ]`;
+      Each question must have exactly 4 options, one correctAnswer, and a brief explanation.
+      Return ONLY valid JSON: [
+        { "question": "...", "options": ["A","B","C","D"], "correctAnswer": "B", "explanation": "..." }
+      ]`;
 
     const response = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
       {
         method: "POST",
         headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({
-          contents: [{parts: [{text: prompt}]}],
-        }),
+        body: JSON.stringify({contents: [{parts: [{text: prompt}]}]}),
       }
     );
 
     const data = await response.json();
-    console.log("Gemini raw response:", JSON.stringify(data, null, 2));
-
     let text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
-    if (!text) {
+    if (!text)
       return res.status(500).json({message: "Gemini response invalid"});
-    }
 
     text = text.replace(/```json|```/g, "").trim();
 
@@ -65,20 +58,17 @@ export const generateQuiz = async (req, res) => {
     try {
       questions = JSON.parse(text);
     } catch (e) {
-      console.error("JSON parse error:", e.message);
       return res
         .status(500)
         .json({message: "Failed to parse Gemini response", raw: text});
     }
 
-    const quiz = await Quiz.create({
+    // ✅ Return data to frontend WITHOUT saving
+    res.status(200).json({
       title: `${topic} Quiz`,
       topic,
-      createdBy: req.user.id, // ✅ creator is authenticated user
       questions,
     });
-
-    res.status(201).json(quiz);
   } catch (error) {
     res.status(500).json({message: error.message});
   }

@@ -21,7 +21,11 @@ export default function CreateQuiz() {
 
   const handleQuestionChange = (idx, field, value) => {
     const updated = [...questions];
-    if (field === "question" || field === "correctAnswer") {
+    if (
+      field === "question" ||
+      field === "correctAnswer" ||
+      field === "explanation"
+    ) {
       updated[idx][field] = value;
     } else {
       updated[idx].options[field] = value;
@@ -42,21 +46,26 @@ export default function CreateQuiz() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Prevent duplicate submissions immediately
+    if (loading) return;
+
     setError("");
     setSuccess("");
     setLoading(true);
+
     try {
       await axios.post(
         `${API_URL}/quiz`,
         {title, topic, questions},
-        {withCredentials: true} // ✅ send cookie-based session
+        {withCredentials: true}
       );
-      setLoading(false);
       setSuccess("✅ Quiz created successfully!");
       setTimeout(() => navigate("/quizzes"), 1500);
     } catch (err) {
-      setLoading(false);
       setError(err.response?.data?.message || "❌ Failed to create quiz");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -69,11 +78,16 @@ export default function CreateQuiz() {
       const res = await axios.post(
         `${API_URL}/quiz/generate`,
         {topic: aiTopic, numQuestions: aiNumQuestions},
-        {withCredentials: true} // ✅ uses cookie
+        {withCredentials: true}
       );
+      // Add default explanation to each question if not present
+      const aiQuestions = res.data.questions.map((q) => ({
+        ...q,
+        explanation: q.explanation || "No explanation provided.",
+      }));
       setTitle(res.data.title);
       setTopic(res.data.topic);
-      setQuestions(res.data.questions);
+      setQuestions(aiQuestions);
       setSuccess("🤖 AI generated quiz! Review and edit before saving.");
     } catch (err) {
       setError(err.response?.data?.message || "❌ AI generation failed");
@@ -215,6 +229,16 @@ export default function CreateQuiz() {
                   }
                   required
                   placeholder="Correct answer (must match one option)"
+                />
+                {/* Add explanation field */}
+                <input
+                  type="text"
+                  className="form-control mt-2"
+                  value={q.explanation || ""}
+                  onChange={(e) =>
+                    handleQuestionChange(idx, "explanation", e.target.value)
+                  }
+                  placeholder="Explanation (optional, shown if answer is wrong)"
                 />
               </div>
             ))}
