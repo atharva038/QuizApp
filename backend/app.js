@@ -2,15 +2,25 @@ import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import cors from "cors";
+import cookieParser from "cookie-parser";
+import helmet from "helmet";
+import compression from "compression";
+import morgan from "morgan";
+import rateLimit from "express-rate-limit";
+
 import authRoutes from "./src/routes/auth.js";
 import quizRoutes from "./src/routes/quiz.js";
 import resultRoutes from "./src/routes/result.js";
-import cookieParser from "cookie-parser";
 
 dotenv.config();
 
 const PORT = process.env.PORT || 5000;
 const app = express();
+
+// --- Security & Performance Middlewares ---
+app.use(helmet()); // Adds secure headers
+app.use(compression()); // Compress responses
+app.use(morgan("combined")); // Logging requests
 
 // --- CORS Setup ---
 const allowedOrigins = process.env.CORS_ORIGINS
@@ -20,10 +30,7 @@ const allowedOrigins = process.env.CORS_ORIGINS
 app.use(
   cors({
     origin: (origin, callback) => {
-      // Allow requests with no origin (like mobile apps or curl)
-      if (!origin) return callback(null, true);
-
-      // Check if origin is explicitly allowed or matches *.vercel.app
+      if (!origin) return callback(null, true); // allow mobile apps, curl, etc.
       if (allowedOrigins.includes(origin) || /\.vercel\.app$/.test(origin)) {
         callback(null, true);
       } else {
@@ -31,35 +38,34 @@ app.use(
         callback(new Error("Not allowed by CORS"));
       }
     },
-    credentials: true,
+    credentials: true, // allow cookies to be sent cross-site
   })
 );
 
-// Middleware
+// --- Middleware ---
 app.use(express.json());
 app.use(cookieParser());
 
-// Routes
-app.use("/api/auth", authRoutes);
+// --- Routes ---
+app.use("/api/auth", authRoutes); // rate limit login/register
 app.use("/api/quiz", quizRoutes);
 app.use("/api/result", resultRoutes);
 
-// Health check endpoint
+// Health check
 app.get("/api/health", (req, res) => {
   res.json({status: "ok"});
 });
 
-// MongoDB connection
+// --- MongoDB connection ---
 mongoose
   .connect(process.env.MONGO_URI)
-  .then(() => {
-    console.log("✅ MongoDB connected");
-  })
+  .then(() => console.log("✅ MongoDB connected"))
   .catch((err) => {
     console.error("❌ MongoDB connection error:", err);
+    process.exit(1); // exit if DB fails to connect
   });
 
-// (Optional) Serve frontend build if needed
+// --- Optional: Serve frontend build (if hosting backend + frontend together) ---
 // import path from "path";
 // app.use(express.static(path.join(process.cwd(), "frontend/build")));
 // app.get("*", (req, res) => {
