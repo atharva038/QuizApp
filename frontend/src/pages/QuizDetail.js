@@ -1,7 +1,8 @@
-import React, {useEffect, useState, useRef} from "react";
+import React, {useEffect, useState, useRef, useContext} from "react";
 import axios from "axios";
 import {useParams, useNavigate} from "react-router-dom";
 import {FaBrain} from "react-icons/fa";
+import {ThemeContext} from "../themeContext.js";
 
 export default function QuizDetail() {
   const {id} = useParams();
@@ -15,6 +16,8 @@ export default function QuizDetail() {
   const [timerActive, setTimerActive] = useState(false);
   const navigate = useNavigate();
   const timerRef = useRef();
+  const {theme} = useContext(ThemeContext);
+  const darkMode = theme === "dark";
 
   useEffect(() => {
     const fetchQuiz = async () => {
@@ -136,25 +139,51 @@ export default function QuizDetail() {
   if (!quiz) return null;
 
   return (
-    <div className="container mt-5">
+    <div
+      className={`container mt-5 quiz-detail-page ${
+        darkMode ? "dark-mode" : "light-mode"
+      }`}
+    >
       <div
-        className="card shadow-lg border-0 rounded-4 mx-auto"
+        className={`card shadow-lg border-0 rounded-4 mx-auto quiz-detail-card ${
+          darkMode ? "dark-mode" : "light-mode"
+        }`}
         style={{maxWidth: 700}}
       >
         <div className="card-body p-4">
           <div className="text-center mb-4">
-            <FaBrain className="text-primary mb-2" size={36} />
-            <h3 className="fw-bold text-dark">{quiz.title}</h3>
-            <p className="text-muted small">Topic: {quiz.topic}</p>
+            <FaBrain
+              className={darkMode ? "text-info mb-2" : "text-primary mb-2"}
+              size={36}
+            />
+            <h3 className={`fw-bold ${darkMode ? "text-light" : "text-dark"}`}>
+              {quiz.title}
+            </h3>
+            <p
+              className={`small ${
+                darkMode ? "text-light opacity-75" : "text-muted"
+              }`}
+            >
+              Topic: {quiz.topic}
+            </p>
             <div className="mb-2">
-              <span className="badge bg-warning text-dark fs-6">
+              <span
+                className={`badge bg-warning ${
+                  darkMode ? "text-dark" : "text-dark"
+                } fs-6`}
+              >
                 Time Left: {formatTime(timer)}
               </span>
             </div>
           </div>
           <form onSubmit={handleSubmit}>
             {quiz.questions.map((q, idx) => (
-              <div key={idx} className="mb-4 border rounded p-3 bg-light">
+              <div
+                key={idx}
+                className={`mb-4 border rounded p-3 ${
+                  darkMode ? "bg-dark text-light border-secondary" : "bg-light"
+                }`}
+              >
                 <div className="mb-2 fw-semibold">
                   Q{idx + 1}: {q.question}
                 </div>
@@ -163,7 +192,9 @@ export default function QuizDetail() {
                     <div className="col-6 mb-2" key={optIdx}>
                       <div className="form-check">
                         <input
-                          className="form-check-input"
+                          className={`form-check-input${
+                            darkMode ? " custom-radio-dark" : ""
+                          }`}
                           type="radio"
                           name={`q${idx}`}
                           id={`q${idx}opt${optIdx}`}
@@ -173,7 +204,9 @@ export default function QuizDetail() {
                           required
                         />
                         <label
-                          className="form-check-label"
+                          className={`form-check-label${
+                            darkMode ? " text-light" : ""
+                          }`}
                           htmlFor={`q${idx}opt${optIdx}`}
                         >
                           {String.fromCharCode(65 + optIdx)}. {opt}
@@ -186,7 +219,9 @@ export default function QuizDetail() {
             ))}
             <button
               type="submit"
-              className="btn btn-success w-100"
+              className={`btn btn-success w-100 ${
+                darkMode ? "text-light" : ""
+              }`}
               disabled={submitting || timer <= 0}
             >
               {submitting ? "Submitting..." : "Submit Quiz"}
@@ -204,6 +239,37 @@ export default function QuizDetail() {
           </form>
         </div>
       </div>
+      {/* Scoped Styling */}
+      <style jsx>{`
+        .quiz-detail-page.light-mode {
+          background: #f8f9fa;
+          color: #212529;
+        }
+        .quiz-detail-page.dark-mode {
+          background: #121212;
+          color: #f1f1f1;
+        }
+        .quiz-detail-card.light-mode {
+          background: #fff;
+        }
+        .quiz-detail-card.dark-mode {
+          background: #1e1e1e;
+          border: 1px solid #333;
+        }
+        .custom-radio-dark {
+          background: #2c2c2c;
+          border: 2px solid #aaa;
+          color: #f1f1f1;
+        }
+        .custom-radio-dark:checked {
+          background-color: #2575fc;
+          border-color: #2575fc;
+          box-shadow: 0 0 0 2px #6a11cb33;
+        }
+        .form-check-label.text-light {
+          color: #f1f1f1;
+        }
+      `}</style>
     </div>
   );
 }

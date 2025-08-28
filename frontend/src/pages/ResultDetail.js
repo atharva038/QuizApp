@@ -1,12 +1,15 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useState, useContext} from "react";
 import axios from "axios";
 import {useParams, Link} from "react-router-dom";
+import {ThemeContext} from "../themeContext.js";
 
 export default function ResultDetail() {
   const {id} = useParams();
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const {theme} = useContext(ThemeContext);
+  const darkMode = theme === "dark";
 
   useEffect(() => {
     const fetchResult = async () => {
@@ -41,10 +44,20 @@ export default function ResultDetail() {
   if (!result) return null;
 
   return (
-    <div className="container mt-5">
-      <div className="card shadow-sm">
+    <div
+      className={`container mt-5 result-detail-page ${
+        darkMode ? "dark-mode text-light" : "light-mode text-dark"
+      }`}
+    >
+      <div
+        className={`card shadow-sm result-detail-card ${
+          darkMode ? "dark-mode text-light" : "light-mode text-dark"
+        }`}
+      >
         <div className="card-body">
-          <h3 className="card-title mb-3">{result.quizId?.title || "Quiz"}</h3>
+          <h3 className={`card-title mb-3 ${darkMode ? "text-light" : ""}`}>
+            {result.quizId?.title || "Quiz"}
+          </h3>
           <p>
             <strong>Topic:</strong> {result.quizId?.topic}
           </p>
@@ -55,11 +68,19 @@ export default function ResultDetail() {
             <strong>Date:</strong> {new Date(result.createdAt).toLocaleString()}
           </p>
           <hr />
-          <h5>Answers & Explanations:</h5>
+          <h5 className={`${darkMode ? "text-light" : ""}`}>
+            Answers & Explanations:
+          </h5>
           <ul className="list-group mb-3">
-            {result.explanations
+            {/* Show explanations if present, else fallback to questions */}
+            {result.explanations && result.explanations.length > 0
               ? result.explanations.map((exp, idx) => (
-                  <li key={idx} className="list-group-item">
+                  <li
+                    key={idx}
+                    className={`list-group-item ${
+                      darkMode ? "bg-dark text-light border-secondary" : ""
+                    }`}
+                  >
                     <div>
                       <strong>Q{idx + 1}:</strong> {exp.question}
                     </div>
@@ -79,6 +100,16 @@ export default function ResultDetail() {
                     <div>
                       <strong>Correct answer:</strong> {exp.correctAnswer}
                     </div>
+                    {exp.options && (
+                      <div>
+                        <strong>Options:</strong>{" "}
+                        {exp.options.map((opt, i) => (
+                          <span key={i} className="me-2">
+                            {String.fromCharCode(65 + i)}. {opt}
+                          </span>
+                        ))}
+                      </div>
+                    )}
                     {exp.explanation && (
                       <div className="mt-2">
                         <strong>Explanation:</strong>{" "}
@@ -88,7 +119,12 @@ export default function ResultDetail() {
                   </li>
                 ))
               : result.quizId?.questions?.map((q, idx) => (
-                  <li key={idx} className="list-group-item">
+                  <li
+                    key={idx}
+                    className={`list-group-item ${
+                      darkMode ? "bg-dark text-light border-secondary" : ""
+                    }`}
+                  >
                     <div>
                       <strong>Q{idx + 1}:</strong> {q.question}
                     </div>
@@ -108,14 +144,54 @@ export default function ResultDetail() {
                     <div>
                       <strong>Correct answer:</strong> {q.correctAnswer}
                     </div>
+                    <div>
+                      <strong>Options:</strong>{" "}
+                      {q.options.map((opt, i) => (
+                        <span key={i} className="me-2">
+                          {String.fromCharCode(65 + i)}. {opt}
+                        </span>
+                      ))}
+                    </div>
+                    {q.explanation && (
+                      <div className="mt-2">
+                        <strong>Explanation:</strong>{" "}
+                        <span className="text-info">{q.explanation}</span>
+                      </div>
+                    )}
                   </li>
                 ))}
           </ul>
-          <Link to="/results" className="btn btn-secondary">
+          <Link
+            to="/results"
+            className={`btn btn-secondary${darkMode ? " text-light" : ""}`}
+          >
             Back to Results
           </Link>
         </div>
       </div>
+      {/* Scoped Styling */}
+      <style jsx>{`
+        .result-detail-page.light-mode {
+          background: #f8f9fa;
+          color: #212529;
+        }
+        .result-detail-page.dark-mode {
+          background: #121212;
+          color: #f1f1f1;
+        }
+        .result-detail-card.light-mode {
+          background: #fff;
+        }
+        .result-detail-card.dark-mode {
+          background: #1e1e1e;
+          border: 1px solid #333;
+        }
+        .list-group-item.bg-dark {
+          background: #2a2a2a;
+          border: 1px solid #444;
+          color: #f1f1f1;
+        }
+      `}</style>
     </div>
   );
 }

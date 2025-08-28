@@ -16,7 +16,10 @@ export default function LandingPage() {
   const {theme} = useContext(ThemeContext);
 
   return (
-    <div className="landing-page" data-theme={theme}>
+    <div
+      className={`landing-page${theme === "dark" ? " text-light" : ""}`}
+      data-theme={theme}
+    >
       {/* --- Hero Section --- */}
       <section className="hero-section d-flex flex-column justify-content-center align-items-center text-center text-white">
         <div className="hero-content">

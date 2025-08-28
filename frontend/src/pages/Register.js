@@ -1,6 +1,7 @@
-import React, {useState} from "react";
+import React, {useState, useContext} from "react";
 import axios from "axios";
 import {FaUserPlus} from "react-icons/fa";
+import {ThemeContext} from "../themeContext.js";
 
 export default function Register() {
   const [username, setUsername] = useState("");
@@ -9,6 +10,8 @@ export default function Register() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
+  const {theme} = useContext(ThemeContext);
+  const darkMode = theme === "dark";
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -34,17 +37,30 @@ export default function Register() {
   };
 
   return (
-    <div className="d-flex align-items-center justify-content-center vh-100 bg-light">
+    <div
+      className={`d-flex align-items-center justify-content-center vh-100 register-page ${
+        darkMode ? "dark-mode" : "light-mode"
+      }`}
+    >
       <div
-        className="card shadow-lg border-0 rounded-4"
+        className={`card shadow-lg border-0 rounded-4 register-card ${
+          darkMode ? "dark-mode text-light" : "light-mode text-dark"
+        }`}
         style={{width: "400px"}}
       >
         <div className="card-body p-4">
           {/* Header */}
           <div className="text-center mb-4">
-            <FaUserPlus className="text-success mb-2" size={40} />
-            <h3 className="fw-bold text-dark">Create Account</h3>
-            <p className="text-muted small">Join us and start quizzing 🚀</p>
+            <FaUserPlus
+              className={`mb-2 ${darkMode ? "text-info" : "text-success"}`}
+              size={40}
+            />
+            <h3 className={`fw-bold ${darkMode ? "text-light" : ""}`}>
+              Create Account
+            </h3>
+            <p className={`small opacity-75 ${darkMode ? "text-light" : ""}`}>
+              Join us and start quizzing 🚀
+            </p>
           </div>
 
           {/* Form */}
@@ -87,7 +103,9 @@ export default function Register() {
 
             <button
               type="submit"
-              className="btn btn-success btn-lg w-100 rounded-3"
+              className={`btn btn-success btn-lg w-100 rounded-3 ${
+                darkMode ? "text-light" : ""
+              }`}
               disabled={loading}
             >
               {loading ? "⏳ Registering..." : "Register"}
@@ -108,15 +126,56 @@ export default function Register() {
 
           {/* Footer */}
           <div className="text-center mt-3">
-            <small className="text-muted">
+            <small
+              className={`fw-semibold ${
+                darkMode ? "text-light" : "text-muted"
+              }`}
+            >
               Already have an account?{" "}
-              <a href="/login" className="text-decoration-none fw-semibold">
+              <a
+                href="/login"
+                className={`text-decoration-none fw-semibold ${
+                  darkMode ? "text-info" : "text-success"
+                }`}
+              >
                 Login here
               </a>
             </small>
           </div>
         </div>
       </div>
+
+      {/* Scoped Styling */}
+      <style jsx>{`
+        .register-page.light-mode {
+          background: #f8f9fa;
+          color: #212529;
+        }
+        .register-page.dark-mode {
+          background: #121212;
+          color: #f1f1f1;
+        }
+
+        .register-card.light-mode {
+          background: #fff;
+        }
+        .register-card.dark-mode {
+          background: #1e1e1e;
+          border: 1px solid #333;
+        }
+
+        .form-control {
+          border-radius: 10px;
+        }
+        .dark-mode .form-control {
+          background: #2c2c2c;
+          border: 1px solid #555;
+          color: #f1f1f1;
+        }
+        .dark-mode .form-control::placeholder {
+          color: #aaa;
+        }
+      `}</style>
     </div>
   );
 }
