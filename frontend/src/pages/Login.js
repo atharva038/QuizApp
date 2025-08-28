@@ -28,7 +28,7 @@ export default function Login() {
       );
       setLoading(false);
       alert("✅ Login successful!");
-      navigate("/quizzes");
+      navigate("/"); // <-- redirect to root
     } catch (err) {
       setLoading(false);
       setError(err.response?.data?.message || "Login failed");

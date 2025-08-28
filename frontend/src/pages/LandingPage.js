@@ -24,7 +24,7 @@ export default function LandingPage() {
       <section className="hero-section d-flex flex-column justify-content-center align-items-center text-center text-white">
         <div className="hero-content">
           <h1 className="display-3 fw-bold mb-3 animate-fade-in-down">
-            Welcome to KnockNFix 🚀
+            Welcome to QuizApp 🚀
           </h1>
           <p
             className="lead mb-4 animate-fade-in-up"
