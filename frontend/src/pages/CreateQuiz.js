@@ -100,7 +100,11 @@ export default function CreateQuiz() {
         darkMode ? "dark-mode text-light" : "light-mode text-dark"
       }`}
     >
-      <div className={`card quiz-form-card shadow border-0 rounded-4 mx-auto${darkMode ? " dark-mode text-light" : " light-mode text-dark"}`}>
+      <div
+        className={`card quiz-form-card shadow border-0 rounded-4 mx-auto${
+          darkMode ? " dark-mode text-light" : " light-mode text-dark"
+        }`}
+      >
         <div className="card-body p-4">
           {/* Header */}
           <div className="text-center mb-4">
@@ -108,7 +112,9 @@ export default function CreateQuiz() {
               className={`mb-2 ${darkMode ? "text-info" : "text-success"}`}
               size={38}
             />
-            <h3 className={`fw-bold ${darkMode ? "text-light" : ""}`}>Create a New Quiz</h3>
+            <h3 className={`fw-bold ${darkMode ? "text-light" : ""}`}>
+              Create a New Quiz
+            </h3>
             <p className={`small opacity-75 ${darkMode ? "text-light" : ""}`}>
               Add questions manually or generate with AI
             </p>
@@ -120,7 +126,9 @@ export default function CreateQuiz() {
               <div className="col-md-5">
                 <input
                   type="text"
-                  className={`form-control${darkMode ? " bg-dark text-light border-secondary" : ""}`}
+                  className={`form-control${
+                    darkMode ? " bg-dark text-light border-secondary" : ""
+                  }`}
                   value={aiTopic}
                   onChange={(e) => setAiTopic(e.target.value)}
                   placeholder="Topic for AI quiz"
@@ -130,7 +138,9 @@ export default function CreateQuiz() {
               <div className="col-md-3">
                 <input
                   type="number"
-                  className={`form-control${darkMode ? " bg-dark text-light border-secondary" : ""}`}
+                  className={`form-control${
+                    darkMode ? " bg-dark text-light border-secondary" : ""
+                  }`}
                   value={aiNumQuestions}
                   onChange={(e) => setAiNumQuestions(Number(e.target.value))}
                   min={1}
@@ -155,10 +165,18 @@ export default function CreateQuiz() {
           {/* Manual Quiz Form */}
           <form onSubmit={handleSubmit}>
             <div className="mb-3">
-              <label className={`form-label fw-semibold${darkMode ? " text-light" : ""}`}>Title</label>
+              <label
+                className={`form-label fw-semibold${
+                  darkMode ? " text-light" : ""
+                }`}
+              >
+                Title
+              </label>
               <input
                 type="text"
-                className={`form-control${darkMode ? " bg-dark text-light border-secondary" : ""}`}
+                className={`form-control${
+                  darkMode ? " bg-dark text-light border-secondary" : ""
+                }`}
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 required
@@ -166,10 +184,18 @@ export default function CreateQuiz() {
               />
             </div>
             <div className="mb-3">
-              <label className={`form-label fw-semibold${darkMode ? " text-light" : ""}`}>Topic</label>
+              <label
+                className={`form-label fw-semibold${
+                  darkMode ? " text-light" : ""
+                }`}
+              >
+                Topic
+              </label>
               <input
                 type="text"
-                className={`form-control${darkMode ? " bg-dark text-light border-secondary" : ""}`}
+                className={`form-control${
+                  darkMode ? " bg-dark text-light border-secondary" : ""
+                }`}
                 value={topic}
                 onChange={(e) => setTopic(e.target.value)}
                 required
@@ -180,7 +206,12 @@ export default function CreateQuiz() {
             <hr />
             <h5 className="mb-3 fw-bold text-secondary">Questions</h5>
             {questions.map((q, idx) => (
-              <div key={idx} className={`mb-4 question-box rounded-3 p-3${darkMode ? " bg-dark text-light border-secondary" : ""}`}>
+              <div
+                key={idx}
+                className={`mb-4 question-box rounded-3 p-3${
+                  darkMode ? " bg-dark text-light border-secondary" : ""
+                }`}
+              >
                 <div className="mb-2 d-flex justify-content-between align-items-center">
                   <label className="form-label fw-semibold mb-0">
                     Question {idx + 1}
@@ -197,7 +228,9 @@ export default function CreateQuiz() {
                 </div>
                 <input
                   type="text"
-                  className={`form-control mb-2${darkMode ? " bg-dark text-light border-secondary" : ""}`}
+                  className={`form-control mb-2${
+                    darkMode ? " bg-dark text-light border-secondary" : ""
+                  }`}
                   value={q.question}
                   onChange={(e) =>
                     handleQuestionChange(idx, "question", e.target.value)
@@ -210,7 +243,9 @@ export default function CreateQuiz() {
                     <div className="col-6 mb-2" key={optIdx}>
                       <input
                         type="text"
-                        className={`form-control${darkMode ? " bg-dark text-light border-secondary" : ""}`}
+                        className={`form-control${
+                          darkMode ? " bg-dark text-light border-secondary" : ""
+                        }`}
                         value={opt}
                         onChange={(e) =>
                           handleQuestionChange(idx, optIdx, e.target.value)
@@ -225,7 +260,9 @@ export default function CreateQuiz() {
                 </div>
                 <input
                   type="text"
-                  className={`form-control mt-2${darkMode ? " bg-dark text-light border-secondary" : ""}`}
+                  className={`form-control mt-2${
+                    darkMode ? " bg-dark text-light border-secondary" : ""
+                  }`}
                   value={q.correctAnswer}
                   onChange={(e) =>
                     handleQuestionChange(idx, "correctAnswer", e.target.value)
@@ -235,7 +272,9 @@ export default function CreateQuiz() {
                 />
                 <input
                   type="text"
-                  className={`form-control mt-2${darkMode ? " bg-dark text-light border-secondary" : ""}`}
+                  className={`form-control mt-2${
+                    darkMode ? " bg-dark text-light border-secondary" : ""
+                  }`}
                   value={q.explanation || ""}
                   onChange={(e) =>
                     handleQuestionChange(idx, "explanation", e.target.value)
@@ -249,14 +288,18 @@ export default function CreateQuiz() {
             <div className="d-flex justify-content-between mt-3">
               <button
                 type="button"
-                className={`btn btn-outline-primary${darkMode ? " text-light border-light" : ""}`}
+                className={`btn btn-outline-primary${
+                  darkMode ? " text-light border-light" : ""
+                }`}
                 onClick={addQuestion}
               >
                 + Add Question
               </button>
               <button
                 type="submit"
-                className={`btn btn-success-custom px-4${darkMode ? " text-light" : ""}`}
+                className={`btn btn-success-custom px-4${
+                  darkMode ? " text-light" : ""
+                }`}
                 disabled={loading}
               >
                 {loading ? "Creating..." : "Create Quiz"}
